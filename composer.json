@@ -1,0 +1,26 @@
+{
+    "name": "istvanmolitor/customer_product",
+    "description": "Ügyfél termékeinek kezelése",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Molitor István",
+            "email": "istvanmolitor@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Molitor\\CustomerProduct\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Molitor\\CustomerProduct\\Providers\\CustomerProductServiceProvider"
+            ]
+        }
+    }
+}
