@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'customer_products' => 'Ügyfél termékek',
+    'customer_products_count' => 'Termékek száma',
+    'categories_count' => 'Kategóriák száma',
     'id' => 'Azonosító',
     'created' => 'Létrehozva',
     'updated' => 'Módosítva',

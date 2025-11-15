@@ -10,6 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Filament\Resources\CustomerListResource\Pages;
 use Molitor\CustomerProduct\Models\CustomerProduct;
@@ -19,7 +20,7 @@ class CustomerListResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static \BackedEnum|null|string $navigationIcon = 'heroicon-o-user-group';
+    protected static \BackedEnum|null|string $navigationIcon = 'heroicon-o-tag';
 
     public static function getNavigationGroup(): string
     {
@@ -28,7 +29,7 @@ class CustomerListResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('customer_product::customer.title');
+        return __('customer_product::common.customer_products');
     }
 
     public static function canAccess(): bool
@@ -46,25 +47,17 @@ class CustomerListResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(__('customer::common.name'))->searchable()->sortable(),
-                Tables\Columns\IconColumn::make('is_seller')
-                    ->boolean()
-                    ->label(__('customer::common.is_seller')),
-                Tables\Columns\IconColumn::make('is_buyer')
-                    ->boolean()
-                    ->label(__('customer::common.is_buyer')),
-                Tables\Columns\TextColumn::make('customerGroup.name')->label(__('customer::common.group'))->sortable(),
+                Tables\Columns\TextColumn::make('customer_products_count')
+                    ->label(__('customer_product::common.customer_products_count'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('categories_count')
+                    ->label(__('customer_product::common.categories_count'))
+                    ->sortable(),
             ])
             ->filters([
             ])
-            ->actions([
-                // No per-record actions for a read-only list in this package
-            ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    // Keep UI consistent even if no bulk actions are provided
-                    DeleteBulkAction::make()->visible(false),
-                ]),
-            ]);
+            ->actions([])
+            ->bulkActions([]);
     }
 
     public static function getEloquentQuery(): Builder
@@ -74,6 +67,17 @@ class CustomerListResource extends Resource
         $cpcTable = (new CustomerProductCategory())->getTable();
 
         return parent::getEloquentQuery()
+            ->select([$customerTable . '.*'])
+            ->selectSub(function ($sub) use ($customerTable, $cpTable) {
+                $sub->from($cpTable . ' as cp')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('cp.customer_id', $customerTable . '.id');
+            }, 'customer_products_count')
+            ->selectSub(function ($sub) use ($customerTable, $cpcTable) {
+                $sub->from($cpcTable . ' as cpc')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('cpc.customer_id', $customerTable . '.id');
+            }, 'categories_count')
             ->where(function (Builder $query) use ($customerTable, $cpTable, $cpcTable) {
                 $query
                     ->whereExists(function ($sub) use ($customerTable, $cpTable) {

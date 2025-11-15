@@ -39,15 +39,9 @@ class CustomerProductResource extends Resource
 {
     protected static ?string $model = CustomerProduct::class;
 
-    protected static \BackedEnum|null|string $navigationIcon = 'heroicon-o-tag';
-    public static function getNavigationGroup(): string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('customer::customer.title');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('customer_product::product.title');
+        return false;
     }
 
     public static function canAccess(): bool
