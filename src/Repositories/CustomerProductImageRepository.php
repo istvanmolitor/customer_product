@@ -7,16 +7,13 @@ namespace Molitor\CustomerProduct\Repositories;
 use Illuminate\Database\Eloquent\Collection;
 use Molitor\CustomerProduct\Models\CustomerProduct;
 use Molitor\CustomerProduct\Models\CustomerProductImage;
-use Molitor\File\Repositories\ImageFileRepositoryInterface;
 use Molitor\Product\Models\Product;
 
 class CustomerProductImageRepository implements CustomerProductImageRepositoryInterface
 {
     private CustomerProductImage $customerProductImage;
 
-    public function __construct(
-        private ImageFileRepositoryInterface $imageFileRepository
-    )
+    public function __construct()
     {
         $this->customerProductImage = new CustomerProductImage();
     }
@@ -48,10 +45,6 @@ class CustomerProductImageRepository implements CustomerProductImageRepositoryIn
 
     public function delete(CustomerProductImage $customerProductImage): void
     {
-        $file = $customerProductImage->file;
-        if ($file) {
-            $this->imageFileRepository->deleteFile($file);
-        }
         $customerProductImage->delete();
     }
 

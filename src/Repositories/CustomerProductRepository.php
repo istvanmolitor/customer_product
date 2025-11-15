@@ -451,4 +451,9 @@ class CustomerProductRepository implements CustomerProductRepositoryInterface
 
         return $data;
     }
+
+    public function getById(int $id): CustomerProduct|null
+    {
+        return $this->customerProduct->find($id);
+    }
 }

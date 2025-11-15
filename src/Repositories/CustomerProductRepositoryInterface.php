@@ -98,4 +98,6 @@ interface CustomerProductRepositoryInterface {
     public function joinBySku(CustomerProduct $customerProduct): bool;
 
     public function priceComparison(Collection $customers, Currency $currency): array;
+
+    public function getById(int $id): CustomerProduct|null;
 }
