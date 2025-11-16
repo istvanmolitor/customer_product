@@ -60,4 +60,11 @@ class EditCustomerProduct extends EditRecord
             }
         }
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return CustomerProductResource::getUrl('index', [
+            'customer_id' => $this->record->customer_id,
+        ]);
+    }
 }

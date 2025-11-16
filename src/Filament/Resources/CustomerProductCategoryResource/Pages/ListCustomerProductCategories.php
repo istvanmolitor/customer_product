@@ -2,20 +2,34 @@
 
 namespace Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Table;
+use Molitor\Customer\Models\Customer;
+use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
 
 class ListCustomerProductCategories extends ListRecords
 {
     protected static string $resource = CustomerProductCategoryResource::class;
 
-    public int|null $customerId = null;
+    public Customer|null $cusomer = null;
 
     public function mount(): void
     {
         parent::mount();
-        $this->customerId = request()->integer('customer_id');
+
+        $customerId = request()->integer('customer_id');
+        if(!$customerId) {
+            abort(404);
+        }
+
+        $this->cusomer = app(CustomerRepositoryInterface::class)->getById($customerId);
+        if(!$this->cusomer) {
+            abort(404);
+        }
     }
 
     public function getBreadcrumb(): string
@@ -25,35 +39,30 @@ class ListCustomerProductCategories extends ListRecords
 
     public function getTitle(): string
     {
-        return __('customer_product::product_category.title');
+        return __('customer_product::product_category.list_title',  ['customer' => $this->cusomer->name]);
     }
 
     protected function getHeaderActions(): array
     {
-        if (!$this->customerId) {
-            return [];
-        }
-
         return [
+            Action::make('products')
+                ->label(__('customer_product::common.title'))
+                ->color('gray')
+                ->url(fn () => CustomerProductResource::getUrl('index', ['customer_id' => $this->cusomer->id]))
+                ->outlined(),
             CreateAction::make()
                 ->label(__('customer_product::product_category.create'))
                 ->icon('heroicon-o-plus'),
         ];
     }
 
-    public function table(\Filament\Tables\Table $table): \Filament\Tables\Table
+    public function table(Table $table): Table
     {
         $table = CustomerProductCategoryResource::table($table);
 
-        if ($this->customerId) {
-            $table->modifyQueryUsing(function ($query) {
-                $query->where('customer_id', $this->customerId);
-            });
-        } else {
-            $table->modifyQueryUsing(function ($query) {
-                $query->whereRaw('1 = 0');
-            })->emptyStateHeading(__('customer_product::common.customer_required'));
-        }
+        $table->modifyQueryUsing(function ($query) {
+            $query->where('customer_id', $this->cusomer->id);
+        });
 
         return $table;
     }

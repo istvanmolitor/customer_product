@@ -2,6 +2,7 @@
 
 namespace Molitor\CustomerProduct\Filament\Resources\CustomerProductResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -11,6 +12,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Molitor\Customer\Models\Customer;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
 use Molitor\CustomerProduct\Repositories\CustomerProductRepositoryInterface;
 
@@ -42,15 +44,21 @@ class ListCustomerProducts extends ListRecords
 
     public function getTitle(): string
     {
-        return __('customer_product::customer.list_title',  ['customer' => $this->cusomer->name]);
+        return __('customer_product::product.list_title',  ['customer' => $this->cusomer->name]);
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('categories')
+                ->label(__('customer_product::common.categories'))
+                ->color('gray')
+                ->url(fn () => CustomerProductCategoryResource::getUrl('index', ['customer_id' => $this->cusomer->id]))
+                ->outlined(),
             CreateAction::make()
                 ->label(__('customer_product::product.create'))
-                ->icon('heroicon-o-plus'),
+                ->icon('heroicon-o-plus')
+                ->url(fn () => CustomerProductResource::getUrl('create', ['customer_id' => $this->cusomer->id])),
         ];
     }
 

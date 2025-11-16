@@ -10,6 +10,8 @@ class CreateCustomerProduct extends CreateRecord
 {
     protected static string $resource = CustomerProductResource::class;
 
+    protected static bool $canCreateAnother = false;
+
     protected function afterCreate(): void
     {
         $rows = $this->data['product_attributes_form'] ?? [];
@@ -29,5 +31,14 @@ class CreateCustomerProduct extends CreateRecord
                 ]);
             }
         }
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        $customerId = $this->record->customer_id ?? request()->integer('customer_id');
+
+        return CustomerProductResource::getUrl('index', [
+            'customer_id' => $customerId,
+        ]);
     }
 }

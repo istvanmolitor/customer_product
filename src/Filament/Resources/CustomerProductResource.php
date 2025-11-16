@@ -79,6 +79,7 @@ class CustomerProductResource extends Resource
                                 ->relationship('customer', 'name')
                                 ->required()
                                 ->searchable()
+                                ->default(fn () => request()->integer('customer_id') ?: null)
                                 ->reactive(),
                             Select::make('product_id')
                                 ->label(__('customer_product::common.product'))
