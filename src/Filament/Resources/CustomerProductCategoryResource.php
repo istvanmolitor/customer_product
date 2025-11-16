@@ -28,7 +28,7 @@ class CustomerProductCategoryResource extends Resource
 
     public static function canAccess(): bool
     {
-        return Gate::allows('acl', 'customer_product') && request()->has('customer_id');
+        return Gate::allows('acl', 'customer_product');
     }
 
     public static function form(Schema $schema): Schema

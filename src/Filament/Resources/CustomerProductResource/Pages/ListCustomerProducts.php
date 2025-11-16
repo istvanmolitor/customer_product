@@ -9,18 +9,30 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
+use Molitor\Customer\Models\Customer;
+use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
+use Molitor\CustomerProduct\Repositories\CustomerProductRepositoryInterface;
 
 class ListCustomerProducts extends ListRecords
 {
     protected static string $resource = CustomerProductResource::class;
 
-    public int|null $cusomerId = null;
+    public Customer|null $cusomer = null;
 
     public function mount(): void
     {
         parent::mount();
-        $this->cusomerId = request()->integer('customer_id');
+
+        $customerId = request()->integer('customer_id');
+        if(!$customerId) {
+            abort(404);
+        }
+
+        $this->cusomer = app(CustomerRepositoryInterface::class)->getById($customerId);
+        if(!$this->cusomer) {
+            abort(404);
+        }
     }
 
     public function getBreadcrumb(): string
@@ -30,7 +42,7 @@ class ListCustomerProducts extends ListRecords
 
     public function getTitle(): string
     {
-        return __('customer_product::product.title');
+        return __('customer_product::customer.list_title',  ['customer' => $this->cusomer->name]);
     }
 
     protected function getHeaderActions(): array
@@ -55,11 +67,9 @@ class ListCustomerProducts extends ListRecords
                 ]),
             ]);
 
-        if ($this->cusomerId) {
-            $table->modifyQueryUsing(function ($query) {
-                $query->where('customer_id', $this->cusomerId);
-            });
-        }
+        $table->modifyQueryUsing(function ($query) {
+            $query->where('customer_id', $this->cusomer->id);
+        });
 
         return $table;
     }

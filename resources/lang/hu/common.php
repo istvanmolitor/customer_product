@@ -46,4 +46,5 @@ return [
     'main_image' => 'Főkép jelölése',
     'image_title' => 'Cím',
     'image_alt' => 'Alt szöveg',
+    'customer_required' => 'Kérjük, adja meg az URL-ben a customer_id paramétert az adatok megjelenítéséhez.',
 ];
