@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Filament\Resources\CustomerListResource\Pages;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
 use Molitor\CustomerProduct\Models\CustomerProduct;
 use Molitor\CustomerProduct\Models\CustomerProductCategory;
 
@@ -29,7 +31,7 @@ class CustomerListResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('customer_product::common.customer_products');
+        return __('customer_product::customer.navigation_label');
     }
 
     public static function canAccess(): bool
@@ -49,10 +51,12 @@ class CustomerListResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label(__('customer::common.name'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('customer_products_count')
                     ->label(__('customer_product::common.customer_products_count'))
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn ($record) => CustomerProductResource::getUrl('index') . '?customer_id=' . $record->id),
                 Tables\Columns\TextColumn::make('categories_count')
                     ->label(__('customer_product::common.categories_count'))
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn ($record) => CustomerProductCategoryResource::getUrl('index') . '?customer_id=' . $record->id),
             ])
             ->filters([
             ])

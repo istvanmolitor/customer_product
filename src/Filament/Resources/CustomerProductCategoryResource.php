@@ -21,21 +21,14 @@ class CustomerProductCategoryResource extends Resource
 {
     protected static ?string $model = CustomerProductCategory::class;
 
-    protected static \BackedEnum|null|string $navigationIcon = 'heroicon-o-rectangle-group';
-
-    public static function getNavigationGroup(): string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('customer::customer.title');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('customer_customer_product::product_category.title');
+        return false;
     }
 
     public static function canAccess(): bool
     {
-        return Gate::allows('acl', 'customer_product');
+        return Gate::allows('acl', 'customer_product') && request()->has('customer_id');
     }
 
     public static function form(Schema $schema): Schema

@@ -15,6 +15,14 @@ class ListCustomerProducts extends ListRecords
 {
     protected static string $resource = CustomerProductResource::class;
 
+    public int|null $cusomerId = null;
+
+    public function mount(): void
+    {
+        parent::mount();
+        $this->cusomerId = request()->integer('customer_id');
+    }
+
     public function getBreadcrumb(): string
     {
         return __('customer_product::common.list');
@@ -36,7 +44,7 @@ class ListCustomerProducts extends ListRecords
 
     public function table(Table $table): Table
     {
-        return CustomerProductResource::table($table)
+        $table = CustomerProductResource::table($table)
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -46,5 +54,13 @@ class ListCustomerProducts extends ListRecords
                     DeleteBulkAction::make(),
                 ]),
             ]);
+
+        if ($this->cusomerId) {
+            $table->modifyQueryUsing(function ($query) {
+                $query->where('customer_id', $this->cusomerId);
+            });
+        }
+
+        return $table;
     }
 }
