@@ -72,7 +72,7 @@ class CustomerProductResource extends Resource
         return $schema->components([
             Tabs::make('Tabs')
                 ->tabs([
-                    Tabs\Tab::make('Alapadatok')
+                    Tabs\Tab::make(__('customer_product::common.basic_data'))
                         ->schema([
                             Select::make('customer_id')
                                 ->label(__('customer_product::common.customer'))
@@ -90,7 +90,7 @@ class CustomerProductResource extends Resource
                                 ->maxLength(255)
                                 ->unique(ignoreRecord: true),
                             Forms\Components\TextInput::make('url')
-                                ->label('URL')
+                                ->label(__('customer_product::common.url'))
                                 ->maxLength(255),
                             TranslatableFields::schema([
                                 Forms\Components\TextInput::make('name')
@@ -141,7 +141,7 @@ class CustomerProductResource extends Resource
                                         ->required(),
                                 ]),
                         ]),
-                    Tabs\Tab::make('Tulajdonságok')
+                    Tabs\Tab::make(__('customer_product::common.attributes'))
                         ->schema([
                             Forms\Components\Repeater::make('product_attributes_form')
                                 ->label(__('customer_product::common.product_attributes'))
@@ -179,7 +179,7 @@ class CustomerProductResource extends Resource
                             ->reorderable()
                             ->schema([
                                 Forms\Components\Toggle::make('is_main')
-                                    ->label('Főkép')
+                                    ->label(__('customer_product::common.main_image'))
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, $set, $get) {
                                         if ($state) {
@@ -194,7 +194,7 @@ class CustomerProductResource extends Resource
                                 Grid::make(3)->schema([
                                     Group::make([
                                         Forms\Components\TextInput::make('url')
-                                            ->label('Kép URL')
+                                            ->label(__('customer_product::common.image_url'))
                                             ->url()
                                             ->required(),
                                     ])->columnSpan(1)->gap(1),
@@ -214,10 +214,10 @@ class CustomerProductResource extends Resource
                                                     ->preload()
                                                     ->required(),
                                                 Forms\Components\TextInput::make('title')
-                                                    ->label('Cím')
+                                                    ->label(__('customer_product::common.image_title'))
                                                     ->maxLength(255),
                                                 Forms\Components\TextInput::make('alt')
-                                                    ->label('Alt szöveg')
+                                                    ->label(__('customer_product::common.image_alt'))
                                                     ->maxLength(255),
                                             ])->columns(2),
                                     ])->columnSpan(2)->gap(2),
@@ -233,7 +233,7 @@ class CustomerProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU')
+                    ->label(__('customer_product::common.sku'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('translation.name')

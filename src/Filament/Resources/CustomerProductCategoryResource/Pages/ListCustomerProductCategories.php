@@ -12,19 +12,19 @@ class ListCustomerProductCategories extends ListRecords
 
     public function getBreadcrumb(): string
     {
-        return __('customer_customer_product::common.list');
+        return __('customer_product::common.list');
     }
 
     public function getTitle(): string
     {
-        return __('customer_customer_product::product_category.title');
+        return __('customer_product::product_category.title');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->label(__('customer_customer_product::product_category.create'))
+                ->label(__('customer_product::product_category.create'))
                 ->icon('heroicon-o-plus'),
         ];
     }

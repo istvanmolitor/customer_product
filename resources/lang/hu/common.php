@@ -40,4 +40,10 @@ return [
     'stock' => 'Készlet',
     'keywords' => 'Kulcsszavak',
     'customer' => 'Ügyfél',
+    'url' => 'URL',
+    'basic_data' => 'Alapadatok',
+    'attributes' => 'Tulajdonságok',
+    'main_image' => 'Főkép jelölése',
+    'image_title' => 'Cím',
+    'image_alt' => 'Alt szöveg',
 ];

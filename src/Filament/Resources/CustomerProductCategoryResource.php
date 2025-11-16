@@ -38,14 +38,14 @@ class CustomerProductCategoryResource extends Resource
 
         return $schema->components([
             Forms\Components\Select::make('parent_id')
-                ->label(__('customer_customer_product::common.parent_category'))
+                ->label(__('customer_product::common.parent_category'))
                 ->options(
                     $categoryRepository->getAllWithRoot()->pluck('name', 'id')
                 )
                 ->default(0)
                 ->required(),
             Forms\Components\FileUpload::make('image')
-                ->label(__('customer_customer_product::common.product_category_image'))
+                ->label(__('customer_product::common.product_category_image'))
                 ->image()
                 ->disk('public')
                 ->directory('product-categories')
@@ -57,7 +57,7 @@ class CustomerProductCategoryResource extends Resource
                 ->getUploadedFileNameForStorageUsing(fn(\Illuminate\Http\UploadedFile $file): string => time() . '_' . $file->hashName()),
             TranslatableFields::schema([
                 Forms\Components\TextInput::make('name')
-                    ->label(__('customer_customer_product::common.name'))
+                    ->label(__('customer_product::common.name'))
                     ->required()
                     ->maxLength(255),
             ]),
@@ -69,7 +69,7 @@ class CustomerProductCategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label(__('customer_customer_product::common.id'))
+                    ->label(__('customer_product::common.id'))
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('image')
                     ->label(__('customer_product::common.image'))
