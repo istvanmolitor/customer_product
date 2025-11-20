@@ -52,7 +52,8 @@ class ListCustomerProductCategories extends ListRecords
                 ->outlined(),
             CreateAction::make()
                 ->label(__('customer_product::product_category.create'))
-                ->icon('heroicon-o-plus'),
+                ->icon('heroicon-o-plus')
+                ->url(fn () => CustomerProductCategoryResource::getUrl('create', ['customer_id' => $this->cusomer->id])),
         ];
     }
 

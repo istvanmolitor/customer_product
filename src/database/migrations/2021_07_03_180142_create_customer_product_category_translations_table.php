@@ -13,11 +13,11 @@ class CreateCustomerProductCategoryTranslationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer_product_category_translaions', function (Blueprint $table) {
+        Schema::create('customer_product_category_translations', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('customer_product_category_id');
-            $table->foreign('customer_product_category_id', 'cateory_id')->references('id')->on('customer_product_categories');
+            $table->foreign('customer_product_category_id', 'category_id')->references('id')->on('customer_product_categories');
 
             $table->unsignedBigInteger('language_id');
             $table->foreign('language_id')->references('id')->on('languages');
@@ -37,6 +37,6 @@ class CreateCustomerProductCategoryTranslationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_product_category_translaions');
+        Schema::dropIfExists('customer_product_category_translations');
     }
 }

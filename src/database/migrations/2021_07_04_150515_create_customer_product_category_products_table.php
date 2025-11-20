@@ -16,10 +16,10 @@ class CreateCustomerProductCategoryProductsTable extends Migration
         Schema::create('customer_product_category_products', function (Blueprint $table) {
 
             $table->unsignedBigInteger('customer_product_category_id');
-            $table->foreign('customer_product_category_id', 'fk_category')->references('id')->on('customer_product_categories');
+            $table->foreign('customer_product_category_id', 'fk_category')->references('id')->on('customer_product_categories')->onDelete('cascade');
 
             $table->unsignedBigInteger('customer_product_id');
-            $table->foreign('customer_product_id', 'fk_product')->references('id')->on('customer_products');
+            $table->foreign('customer_product_id', 'fk_product')->references('id')->on('customer_products')->onDelete('cascade');
 
             $table->primary(['customer_product_category_id', 'customer_product_id'], 'pri_customer_product');
         });

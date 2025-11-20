@@ -12,7 +12,10 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Gate;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource\Pages\CreateCustomerProductCategory;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource\Pages\EditCustomerProductCategory;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource\Pages\ListCustomerProductCategories;
+use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\Language\Filament\Components\TranslatableFields;
 use Molitor\CustomerProduct\Models\CustomerProductCategory;
 use Molitor\CustomerProduct\Repositories\CustomerProductCategoryRepositoryInterface;
@@ -36,12 +39,22 @@ class CustomerProductCategoryResource extends Resource
         /** @var CustomerProductCategoryRepositoryInterface $categoryRepository */
         $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
 
+        // Resolve customer from URL query parameter and fetch categories accordingly
+        $options = collect();
+        $customerId = request()->integer('customer_id');
+        if ($customerId) {
+            /** @var CustomerRepositoryInterface $customerRepository */
+            $customerRepository = app(CustomerRepositoryInterface::class);
+            $customer = $customerRepository->getById($customerId);
+            if ($customer) {
+                $options = $categoryRepository->getAllByCustomer($customer)->pluck('name', 'id');
+            }
+        }
+
         return $schema->components([
             Forms\Components\Select::make('parent_id')
                 ->label(__('customer_product::common.parent_category'))
-                ->options(
-                    $categoryRepository->getAllWithRoot()->pluck('name', 'id')
-                )
+                ->options($options)
                 ->default(0)
                 ->required(),
             Forms\Components\FileUpload::make('image')
@@ -100,10 +113,8 @@ class CustomerProductCategoryResource extends Resource
     {
         return [
             'index' => ListCustomerProductCategories::route('/'),
-            /*
-        'create' => Pages\CreateCustomerProductCategory::route('/create'),
-        'edit' => Pages\EditCustomerProductCategory::route('/{record}/edit'),
-        */
+        'create' => CreateCustomerProductCategory::route('/create'),
+        'edit' => EditCustomerProductCategory::route('/{record}/edit'),
         ];
     }
 }
