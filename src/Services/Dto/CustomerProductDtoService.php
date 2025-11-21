@@ -5,9 +5,9 @@ namespace Molitor\CustomerProduct\Services\Dto;
 use Molitor\Currency\Repositories\CurrencyRepositoryInterface;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Models\CustomerProduct;
-use Molitor\CustomerProduct\Models\CustomerProductCategory;
 use Molitor\CustomerProduct\Models\CustomerProductImage;
 use Molitor\CustomerProduct\Repositories\CustomerProductCategoryProductRepositoryInterface;
+use Molitor\CustomerProduct\Repositories\CustomerProductCategoryRepositoryInterface;
 use Molitor\CustomerProduct\Repositories\CustomerProductImageRepositoryInterface;
 use Molitor\CustomerProduct\Repositories\CustomerProductRepositoryInterface;
 use Molitor\Product\Dto\ImageDto;
@@ -23,7 +23,8 @@ class CustomerProductDtoService extends BaseProductDtoService
         protected ProductUnitDtoService $productUnitDtoService,
         protected CurrencyRepositoryInterface $currencyRepository,
         protected CustomerProductImageRepositoryInterface $customerProductImageRepository,
-        protected CustomerProductCategoryProductRepositoryInterface $customerProductCategoryProductRepository
+        protected CustomerProductCategoryProductRepositoryInterface $customerProductCategoryProductRepository,
+        protected CustomerProductCategoryRepositoryInterface $customerProductCategoryRepository
     )
     {
     }
@@ -120,11 +121,18 @@ class CustomerProductDtoService extends BaseProductDtoService
     public function updateCustomerProductCategories(CustomerProduct $customerProduct, ProductDto $productDto): void
     {
         $this->customerProductCategoryProductRepository->deleteByCustomerProduct($customerProduct);
-        /** @var ProductCategoryDto $category */
-        foreach ($productDto->getCategories() as $category)
+        $categoryIds = [];
+        /** @var ProductCategoryDto $categoryDto */
+        foreach ($productDto->getCategories() as $categoryDto)
         {
-            //$this->customerProductCategoryProductRepository->setValue($customerProduct);
+            $categoryIds[] = $this->getCategoryIdByDto($customerProduct->customer, $categoryDto);
         }
+        $this->customerProductCategoryProductRepository->setProductValues($customerProduct, $categoryIds, true);
+    }
+
+    protected function getCategoryIdByDto(Customer $customer, ProductCategoryDto $categoryDto): int
+    {
+        $this->customerProductCategoryRepository->createCategory($customer, []);
     }
 
     public function makeDto(CustomerProduct $customerProduct): ProductDto
