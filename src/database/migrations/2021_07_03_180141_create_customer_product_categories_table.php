@@ -18,11 +18,11 @@ class CreateCustomerProductCategoriesTable extends Migration
 
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers');
-
             $table->unsignedBigInteger('parent_id');
+            $table->unsignedBigInteger('left_value')->nullable();
+            $table->unsignedBigInteger('right_value')->nullable();
             $table->string('url')->nullable();
             $table->string('image_url')->nullable();
-            $table->unsignedBigInteger('file_id')->nullable();
 
             $table->timestamps();
         });

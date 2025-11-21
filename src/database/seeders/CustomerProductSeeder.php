@@ -4,12 +4,11 @@ namespace Molitor\CustomerProduct\database\seeders;
 
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Molitor\Currency\Models\Currency;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Models\CustomerProduct;
 use Molitor\CustomerProduct\Models\CustomerProductCategory;
-use Molitor\Language\Models\Language;
+use Molitor\CustomerProduct\Repositories\CustomerProductCategoryRepositoryInterface;
 use Molitor\Language\Repositories\LanguageRepositoryInterface;
 use Molitor\Product\Models\Product;
 use Molitor\Product\Models\ProductUnit;
@@ -18,6 +17,23 @@ use Molitor\User\Services\AclManagementService;
 
 class CustomerProductSeeder extends Seeder
 {
+    protected function createCategory(Customer $customer, $faker, $languages, int $parentId = 0)
+    {
+        $category = new CustomerProductCategory();
+        $category->customer_id = $customer->id;
+        $category->parent_id = $parentId;
+        $category->url = $faker->optional()->url();
+        $category->image_url = $faker->optional()->imageUrl(640, 480, 'technics', true);
+        foreach ($languages as $language) {
+            $name = ucfirst($faker->word());
+            $category->setAttributeTranslation('name', $name, $language->code);
+            $category->setAttributeTranslation('description', $faker->sentence(10), $language->code);
+            $category->setAttributeTranslation('keywords', implode(',', $faker->words(5)), $language->code);
+        }
+        $category->save();
+        return $category;
+    }
+
     /**
      * Run the database seeds.
      *
@@ -34,7 +50,6 @@ class CustomerProductSeeder extends Seeder
             $this->command->error($e->getMessage());
         }
 
-        // Only generate fake test data in local environment
         if (!app()->isLocal()) {
             return;
         }
@@ -47,29 +62,30 @@ class CustomerProductSeeder extends Seeder
         $unit = ProductUnit::query()->inRandomOrder()->first();
         $languages = app(LanguageRepositoryInterface::class)->getEnabledLanguages();
 
+
+
         if (!$customer || !$currency || !$unit || $languages->isEmpty()) {
             $this->command?->warn('CustomerProductSeeder skipped fake data: missing base data (customer, currency, unit, or languages).');
             return;
         }
 
-        // Create some categories for the customer
-        $categoryCount = 5;
         $categories = collect();
-        for ($i = 0; $i < $categoryCount; $i++) {
-            $category = new CustomerProductCategory();
-            $category->customer_id = $customer->id;
-            $category->parent_id = 0; // root
-            $category->url = $faker->optional()->url();
-            $category->image_url = $faker->optional()->imageUrl(640, 480, 'technics', true);
-            foreach ($languages as $language) {
-                $name = ucfirst($faker->word());
-                $category->setAttributeTranslation('name', $name, $language->code);
-                $category->setAttributeTranslation('description', $faker->sentence(10), $language->code);
-                $category->setAttributeTranslation('keywords', implode(',', $faker->words(5)), $language->code);
-            }
-            $category->save();
+        for ($i = 0; $i < 5; $i++) {
+            $category = $this->createCategory($customer, $faker, $languages);
             $categories->push($category);
+            for ($j = 0; $j < 3; $j++) {
+                $subCategory = $this->createCategory($customer, $faker, $languages, $customer->id);
+                $categories->push($subCategory);
+                for ($k = 0; $k < 2; $k++) {
+                    $subSubCategory = $this->createCategory($customer, $faker, $languages, $subCategory->id);
+                    $categories->push($subSubCategory);
+                }
+            }
         }
+
+        /** @var CustomerProductCategoryRepositoryInterface $customerProductCategoryRepository */
+        $customerProductCategoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
+        $customerProductCategoryRepository->refreshLeftRight();
 
         // Create some customer products
         $productCount = 15;

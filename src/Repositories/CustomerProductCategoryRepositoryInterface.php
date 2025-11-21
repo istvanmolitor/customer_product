@@ -36,4 +36,6 @@ interface CustomerProductCategoryRepositoryInterface
     public function getAllByCustomer(Customer $customer): Collection;
 
     public function getByIds(Customer $customer, array $customerProductCategoryIds): Collection;
+
+    public function refreshLeftRight(): void;
 }

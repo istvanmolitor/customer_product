@@ -81,20 +81,18 @@ class CustomerProductCategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label(__('customer_product::common.id'))
-                    ->sortable(),
                 Tables\Columns\ImageColumn::make('image')
                     ->label(__('customer_product::common.image'))
                     ->size(100)
                     ->disk('public')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('customer_product::common.name'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('parent.name')
-                    ->label(__('customer_product::common.parent'))
+                Tables\Columns\TextColumn::make('category_path')
+                    ->label(__('customer_product::common.category_path'))
+                    ->getStateUsing(function ($record) {
+                        /** @var CustomerProductCategoryRepositoryInterface $categoryRepository */
+                        $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
+                        return $categoryRepository->getCategoryToString($record, ' / ');
+                    })
                     ->toggleable(),
             ])
             ->filters([])

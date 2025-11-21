@@ -151,4 +151,33 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
             ->whereIn('id', $customerProductCategoryIds)
             ->get();
     }
+
+    public function refreshLeftRight(): void
+    {
+        $this->refreshLeftRightValue(0, 1);
+    }
+
+    private function refreshLeftRightValue(int $productCategoryId, int $leftValue): int
+    {
+        $subCategories = $this->category->where('parent_id', $productCategoryId)->get();
+        if ($subCategories->count() === 0) {
+            if ($productCategoryId !== 0) {
+                $this->category->where('id', $productCategoryId)->update([
+                    'left_value' => $leftValue,
+                    'right_value' => $leftValue,
+                ]);
+            }
+            return $leftValue;
+        } else {
+            foreach ($subCategories as $subCategory) {
+                $subCategory->left_value = $leftValue;
+                $rightValue = $this->refreshLeftRightValue($subCategory->id, $leftValue);
+                $subCategory->right_value = $rightValue;
+                $subCategory->save();
+
+                $leftValue = $rightValue + 1;
+            }
+            return $rightValue;
+        }
+    }
 }
