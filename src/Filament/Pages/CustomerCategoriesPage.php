@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Gate;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
+use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
 use Molitor\CustomerProduct\Repositories\CustomerProductCategoryRepositoryInterface;
 
 class CustomerCategoriesPage extends Page
@@ -57,7 +58,7 @@ class CustomerCategoriesPage extends Page
     {
         $customerId = $this->data['customer']->id;
         $this->redirect(
-            \Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl(
+            CustomerProductCategoryResource::getUrl(
                 'edit',
                 ['record' => $categoryId, 'customer_id' => $customerId]
             )
