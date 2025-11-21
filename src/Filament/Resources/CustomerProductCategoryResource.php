@@ -55,7 +55,19 @@ class CustomerProductCategoryResource extends Resource
             }
         }
 
+        /** @var CustomerRepositoryInterface $customerRepository */
+        $customerRepository = app(CustomerRepositoryInterface::class);
+
         return $schema->components([
+            Forms\Components\Select::make('customer_id')
+                ->label(__('customer_product::common.customer'))
+                ->options($customerRepository->getSellerOptions())
+                ->default($customerId ?: 0)
+                ->disabled(function ($livewire, string $operation) use ($customerId) {
+                    return (bool) $customerId || $operation === 'edit';
+                })
+                ->dehydrated(true)
+                ->required(),
             Forms\Components\Select::make('parent_id')
                 ->label(__('customer_product::common.parent_category'))
                 ->options($options)
@@ -115,8 +127,8 @@ class CustomerProductCategoryResource extends Resource
     {
         return [
             'index' => ListCustomerProductCategories::route('/'),
-        'create' => CreateCustomerProductCategory::route('/create'),
-        'edit' => EditCustomerProductCategory::route('/{record}/edit'),
+            'create' => CreateCustomerProductCategory::route('/create'),
+            'edit' => EditCustomerProductCategory::route('/{record}/edit'),
         ];
     }
 }

@@ -19,4 +19,14 @@ class EditCustomerProductCategory extends EditRecord
     {
         return __('customer_product::common.edit');
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Ensure customer_id cannot be changed during edit
+        if (isset($this->record) && isset($this->record->customer_id)) {
+            $data['customer_id'] = $this->record->customer_id;
+        }
+
+        return $data;
+    }
 }

@@ -23,15 +23,6 @@
                         >
                             <x-heroicon-o-pencil class="w-4 h-4" />
                         </button>
-
-                        <button
-                            type="button"
-                            wire:click="$dispatch('confirm-delete-category', { categoryId: {{ $category->id }}, categoryName: '{{ addslashes($category->name) }}' })"
-                            class="p-2 text-gray-500 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                            title="Törlés"
-                        >
-                            <x-heroicon-o-trash class="w-4 h-4" />
-                        </button>
                     </div>
                 </div>
 
