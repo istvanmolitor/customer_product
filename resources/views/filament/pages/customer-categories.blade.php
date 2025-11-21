@@ -7,7 +7,30 @@
 
 <x-filament::page>
     <div class="space-y-6">
-        <h1 class="text-xl font-semibold">{{ $customer?->name }} – Termékkategóriák</h1>
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-semibold">{{ $customer?->name }} – Termékkategóriák</h1>
+
+            <div class="flex gap-2">
+                <x-filament::button
+                    tag="a"
+                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('index', ['customer_id' => $customer->id])"
+                    icon="heroicon-o-list-bullet"
+                    color="gray"
+                    outlined
+                >
+                    Lista nézet
+                </x-filament::button>
+
+                <x-filament::button
+                    tag="a"
+                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('create', ['customer_id' => $customer->id])"
+                    icon="heroicon-o-plus"
+                    color="primary"
+                >
+                    Új kategória létrehozása
+                </x-filament::button>
+            </div>
+        </div>
 
         @if($categories->isEmpty())
             <p class="text-gray-500">Nincs megjeleníthető kategória.</p>

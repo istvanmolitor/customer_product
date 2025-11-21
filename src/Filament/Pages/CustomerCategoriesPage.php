@@ -54,6 +54,7 @@ class CustomerCategoriesPage extends Page
         $this->data['categories'] = $categories;
     }
 
+
     public function editCategory(int $categoryId): void
     {
         $customerId = $this->data['customer']->id;

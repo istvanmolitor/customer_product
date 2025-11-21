@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Molitor\Customer\Models\Customer;
 use Molitor\Customer\Repositories\CustomerRepositoryInterface;
+use Molitor\CustomerProduct\Filament\Pages\CustomerCategoriesPage;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
 
@@ -49,6 +50,12 @@ class ListCustomerProductCategories extends ListRecords
                 ->label(__('customer_product::common.title'))
                 ->color('gray')
                 ->url(fn () => CustomerProductResource::getUrl('index', ['customer_id' => $this->cusomer->id]))
+                ->outlined(),
+            Action::make('tree_view')
+                ->label('Fa nézet')
+                ->icon('heroicon-o-rectangle-group')
+                ->color('gray')
+                ->url(fn () => CustomerCategoriesPage::getUrl(['customer_id' => $this->cusomer->id]))
                 ->outlined(),
             CreateAction::make()
                 ->label(__('customer_product::product_category.create'))
