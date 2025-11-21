@@ -38,4 +38,9 @@ interface CustomerProductCategoryRepositoryInterface
     public function getByIds(Customer $customer, array $customerProductCategoryIds): Collection;
 
     public function refreshLeftRight(): void;
+
+    /**
+     * Get all descendant categories (children, grandchildren, etc.) of the given category.
+     */
+    public function getAllChildren(Category $category): Collection;
 }

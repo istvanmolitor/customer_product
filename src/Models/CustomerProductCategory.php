@@ -49,4 +49,10 @@ class CustomerProductCategory extends TranslatableModel
     {
         return $this->name ?? "Kategória #{$this->id}";
     }
+
+    public function scopeCategory($query, CustomerProductCategory $category)
+    {
+        return $query->where('left_value', '>=', $category->left_value)
+            ->where('right_value', '<=', $category->right_value);
+    }
 }

@@ -152,6 +152,11 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
             ->get();
     }
 
+    public function getAllChildren(CustomerProductCategory $category): Collection
+    {
+        return $this->category->category($category)->where('id', $category->id)->get();
+    }
+
     public function refreshLeftRight(): void
     {
         $this->refreshLeftRightValue(0, 1);

@@ -49,7 +49,9 @@ class CustomerProductCategoryResource extends Resource
             if ($customer) {
                 $categories = $categoryRepository->getAllByCustomer($customer)
                     ->filter(fn($cat) => $cat->name !== null && $cat->name !== '')
-                    ->pluck('name', 'id')
+                    ->mapWithKeys(function ($cat) use ($categoryRepository) {
+                        return [$cat->id => $categoryRepository->getCategoryToString($cat, ' / ')];
+                    })
                     ->toArray();
                 $options = $options + $categories;
             }

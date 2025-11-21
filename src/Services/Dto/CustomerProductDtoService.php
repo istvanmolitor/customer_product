@@ -123,20 +123,7 @@ class CustomerProductDtoService extends BaseProductDtoService
         /** @var ProductCategoryDto $category */
         foreach ($productDto->getCategories() as $category)
         {
-            $this->customerProductCategoryProductRepository->setValue($customerProduct);
+            //$this->customerProductCategoryProductRepository->setValue($customerProduct);
         }
     }
-
-    public function getCustomerProductCategory(ProductCategoryDto $category): CustomerProductCategory|null
-    {
-        if($category->path->getLength() === 0) {
-            return null;
-        }
-
-        foreach ($category->path->getItems() as $item) {
-
-        }
-    }
-
-
 }
