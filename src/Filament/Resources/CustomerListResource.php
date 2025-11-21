@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Filament\Resources\CustomerListResource\Pages;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
-use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
+use Molitor\CustomerProduct\Filament\Pages\CustomerCategoriesPage;
 use Molitor\CustomerProduct\Models\CustomerProduct;
 use Molitor\CustomerProduct\Models\CustomerProductCategory;
 
@@ -56,7 +56,7 @@ class CustomerListResource extends Resource
                 Tables\Columns\TextColumn::make('categories_count')
                     ->label(__('customer_product::common.categories_count'))
                     ->sortable()
-                    ->url(fn ($record) => CustomerProductCategoryResource::getUrl('index') . '?customer_id=' . $record->id),
+                    ->url(fn ($record) => CustomerCategoriesPage::getUrl() . '?customer_id=' . $record->id),
             ])
             ->filters([
             ])

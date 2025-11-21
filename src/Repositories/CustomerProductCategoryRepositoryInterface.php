@@ -27,13 +27,13 @@ interface CustomerProductCategoryRepositoryInterface
 
     public function createCategory(Customer $customer, array $path, int|string|null $language = null): Category|null;
 
-    public function getRootCategories(Customer $customer): Collection;
+    public function getRootCategories(Customer $customer, int|string|null $language = null): Collection;
 
     public function deleteProductCategories(Customer $customer): void;
 
     public function deleteProductCategory(Category $customerProductCategory): self;
 
-    public function getAllByCustomer(Customer $customer): Collection;
+    public function getAllByCustomer(Customer $customer, int|string|null $language = null): Collection;
 
     public function getByIds(Customer $customer, array $customerProductCategoryIds): Collection;
 

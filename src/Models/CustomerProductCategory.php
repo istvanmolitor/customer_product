@@ -42,11 +42,11 @@ class CustomerProductCategory extends TranslatableModel
 
     public function customerProducts(): HasMany
     {
-        return $this->hasMany(CustomerProduct::class, 'customer_product_category_id');
+        return $this->hasMany(CustomerProduct::class, 'parent_id');
     }
 
     public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?? "Kategória #{$this->id}";
     }
 }

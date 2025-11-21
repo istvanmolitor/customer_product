@@ -7,29 +7,28 @@ namespace Molitor\CustomerProduct\Repositories;
 use Illuminate\Database\Eloquent\Collection;
 use Molitor\Customer\Models\Customer;
 use Molitor\CustomerProduct\Models\CustomerProductCategory;
-use Molitor\CustomerProduct\Models\CustomerProductCategory as Category;
 
 class CustomerProductCategoryRepository implements CustomerProductCategoryRepositoryInterface
 {
-    private Category $category;
+    private CustomerProductCategory $category;
 
     public function __construct()
     {
-        $this->category = new Category();
+        $this->category = new CustomerProductCategory();
     }
 
-    public function getRootCategoryByName(Customer $customer, string $name, int|string|null $language = null): ?Category
+    public function getRootCategoryByName(Customer $customer, string $name, int|string|null $language = null): ?CustomerProductCategory
     {
         return $this->category
             ->joinTranslation($language)
             ->where('customer_id', $customer->id)
             ->where('parent_id', 0)
             ->whereTranslation('name', $name)
-            ->baseSelect()
+            ->selectBase()
             ->first();
     }
 
-    public function createRootCategory(Customer $customer, string $name, int|string|null $language = null): Category
+    public function createRootCategory(Customer $customer, string $name, int|string|null $language = null): CustomerProductCategory
     {
         $category = $this->getRootCategoryByName($customer, $name, $language);
         if ($category) {
@@ -44,18 +43,18 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
         return $category;
     }
 
-    public function getSubCategoryByName(Category $parent, string $name, int|string|null $language = null): Category|null
+    public function getSubCategoryByName(CustomerProductCategory $parent, string $name, int|string|null $language = null): CustomerProductCategory|null
     {
         return $this->category
             ->joinTranslation($language)
             ->where('customer_id', $parent->customer_id)
             ->where('parent_id', $parent->id)
             ->whereTranslation('name', $name)
-            ->baseSelect()
+            ->selectBase()
             ->first();
     }
 
-    public function createSubCategory(Category $parent, string $name, int|string|null $language = null): Category
+    public function createSubCategory(CustomerProductCategory $parent, string $name, int|string|null $language = null): CustomerProductCategory
     {
         $category = $this->getSubCategoryByName($parent, $name, $language);
         if ($category) {
@@ -70,7 +69,7 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
         return $category;
     }
 
-    public function getPathCategories(Category $category): array
+    public function getPathCategories(CustomerProductCategory $category): array
     {
         $path = $category->parent ? $this->getPathCategories($category->parent) : [];
         $path[] = $category;
@@ -79,7 +78,7 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
 
     private array $pathCache = [];
 
-    public function getPath(Category $category, int|string|null $language = null): array
+    public function getPath(CustomerProductCategory $category, int|string|null $language = null): array
     {
         if (!array_key_exists($category->id, $this->pathCache)) {
             $path = [];
@@ -91,12 +90,12 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
         return $this->pathCache[$category->id];
     }
 
-    public function getCategoryToString(Category $category, $separator = '/', int|string|null $language = null): string
+    public function getCategoryToString(CustomerProductCategory $category, $separator = '/', int|string|null $language = null): string
     {
         return implode($separator, $this->getPath($category, $language));
     }
 
-    public function createCategory(Customer $customer, array $path, int|string|null $language = null): Category|null
+    public function createCategory(Customer $customer, array $path, int|string|null $language = null): CustomerProductCategory|null
     {
         $parent = null;
         foreach ($path as $name) {
@@ -109,12 +108,13 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
         return $parent;
     }
 
-    public function getRootCategories(Customer $customer): Collection
+    public function getRootCategories(Customer $customer, int|string|null $language = null): Collection
     {
         return $this->category
+            ->joinTranslation($language)
             ->where('customer_id', $customer->id)
             ->where('parent_id', 0)
-            ->baseSelect()
+            ->selectBase()
             ->get();
     }
 
@@ -139,9 +139,9 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
         return $this;
     }
 
-    public function getAllByCustomer(Customer $customer): Collection
+    public function getAllByCustomer(Customer $customer, int|string|null $language = null): Collection
     {
-        return $this->category->where('customer_id', $customer->id)->orderBy('name')->get();
+        return $this->category->where('customer_id', $customer->id)->joinTranslation($language)->orderByTranslation('name')->get();
     }
 
     public function getByIds(Customer $customer, array $customerProductCategoryIds): Collection

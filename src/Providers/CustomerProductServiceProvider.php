@@ -47,6 +47,7 @@ class CustomerProductServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'customer_product');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'customer_product');
     }
 
     public function register()

@@ -40,14 +40,18 @@ class CustomerProductCategoryResource extends Resource
         $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
 
         // Resolve customer from URL query parameter and fetch categories accordingly
-        $options = collect();
+        $options = [0 => '– Nincs (Root kategória) –'];
         $customerId = request()->integer('customer_id');
         if ($customerId) {
             /** @var CustomerRepositoryInterface $customerRepository */
             $customerRepository = app(CustomerRepositoryInterface::class);
             $customer = $customerRepository->getById($customerId);
             if ($customer) {
-                $options = $categoryRepository->getAllByCustomer($customer)->pluck('name', 'id');
+                $categories = $categoryRepository->getAllByCustomer($customer)
+                    ->filter(fn($cat) => $cat->name !== null && $cat->name !== '')
+                    ->pluck('name', 'id')
+                    ->toArray();
+                $options = $options + $categories;
             }
         }
 
