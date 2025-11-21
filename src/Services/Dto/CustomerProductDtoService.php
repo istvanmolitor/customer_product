@@ -126,4 +126,19 @@ class CustomerProductDtoService extends BaseProductDtoService
             //$this->customerProductCategoryProductRepository->setValue($customerProduct);
         }
     }
+
+    public function makeDto(CustomerProduct $customerProduct): ProductDto
+    {
+        $productDto = new ProductDto();
+        $productDto->id = $customerProduct->id;
+        $productDto->source = 'customer_product';
+        $productDto->sku = $customerProduct->sku;
+        $productDto->productUnit = $this->productUnitDtoService->makeDto($customerProduct->productUnit);
+        $productDto->name = $customerProduct->getAttributeDto('name');
+        $productDto->description = $customerProduct->getAttributeDto('description');
+        $productDto->price = $customerProduct->price;
+        $productDto->currency = $customerProduct->currency?->code;
+        $productDto->url = $customerProduct->url;
+        return $productDto;
+    }
 }

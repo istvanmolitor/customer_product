@@ -3,11 +3,13 @@
 namespace Molitor\CustomerProduct\Filament\Resources\CustomerProductResource\Pages;
 
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Molitor\Customer\Models\Customer;
@@ -15,6 +17,7 @@ use Molitor\Customer\Repositories\CustomerRepositoryInterface;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource;
 use Molitor\CustomerProduct\Filament\Resources\CustomerProductResource;
 use Molitor\CustomerProduct\Repositories\CustomerProductRepositoryInterface;
+use Molitor\CustomerProduct\Services\ProductService;
 
 class ListCustomerProducts extends ListRecords
 {
@@ -71,6 +74,20 @@ class ListCustomerProducts extends ListRecords
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('copyToProducts')
+                        ->label(__('customer_product::common.copy_to_products'))
+                        ->icon('heroicon-o-document-duplicate')
+                        ->action(function ($records) {
+                            $productService = app(ProductService::class);
+                            foreach($records as $record) {
+                                $productService->copyToProduct($record);
+                            }
+
+                            Notification::make()
+                                ->success()
+                                ->title(__('customer_product::common.copy_success'))
+                                ->send();
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ]);

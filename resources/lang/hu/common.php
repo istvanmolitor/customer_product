@@ -47,4 +47,6 @@ return [
     'image_title' => 'Cím',
     'image_alt' => 'Alt szöveg',
     'customer_required' => 'Kérjük, adja meg az URL-ben a customer_id paramétert az adatok megjelenítéséhez.',
+    'copy_to_products' => 'Másolás a termékek közé',
+    'copy_success' => 'A termékek átmásolása sikeres.',
 ];
