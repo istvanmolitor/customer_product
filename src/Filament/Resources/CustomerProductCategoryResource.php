@@ -38,13 +38,13 @@ class CustomerProductCategoryResource extends Resource
     {
         /** @var CustomerProductCategoryRepositoryInterface $categoryRepository */
         $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
+        /** @var CustomerRepositoryInterface $customerRepository */
+        $customerRepository = app(CustomerRepositoryInterface::class);
 
         // Resolve customer from URL query parameter and fetch categories accordingly
         $options = [0 => '– Nincs (Root kategória) –'];
         $customerId = request()->integer('customer_id');
         if ($customerId) {
-            /** @var CustomerRepositoryInterface $customerRepository */
-            $customerRepository = app(CustomerRepositoryInterface::class);
             $customer = $customerRepository->getById($customerId);
             if ($customer) {
                 $categories = $categoryRepository->getAllByCustomer($customer)
@@ -57,9 +57,6 @@ class CustomerProductCategoryResource extends Resource
             }
         }
 
-        /** @var CustomerRepositoryInterface $customerRepository */
-        $customerRepository = app(CustomerRepositoryInterface::class);
-
         return $schema->components([
             Forms\Components\Select::make('customer_id')
                 ->label(__('customer_product::common.customer'))
@@ -68,24 +65,12 @@ class CustomerProductCategoryResource extends Resource
                 ->disabled(function ($livewire, string $operation) use ($customerId) {
                     return (bool) $customerId || $operation === 'edit';
                 })
-                ->dehydrated(true)
                 ->required(),
             Forms\Components\Select::make('parent_id')
                 ->label(__('customer_product::common.parent_category'))
                 ->options($options)
                 ->default(0)
                 ->required(),
-            Forms\Components\FileUpload::make('image')
-                ->label(__('customer_product::common.product_category_image'))
-                ->image()
-                ->disk('public')
-                ->directory('product-categories')
-                ->visibility('public')
-                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                ->maxSize(2048)
-                ->nullable()
-                ->preserveFilenames(false)
-                ->getUploadedFileNameForStorageUsing(fn(\Illuminate\Http\UploadedFile $file): string => time() . '_' . $file->hashName()),
             TranslatableFields::schema([
                 Forms\Components\TextInput::make('name')
                     ->label(__('customer_product::common.name'))
