@@ -17,6 +17,9 @@ class CustomerCategoriesPage extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
+    public ?int $customerId = null;
+    public $categories = [];
+
     public static function canAccess(): bool
     {
         return Gate::allows('acl', 'customer_product');
@@ -24,13 +27,17 @@ class CustomerCategoriesPage extends Page
 
     public function getTitle(): string|Htmlable
     {
+        if ($this->customerId) {
+            /** @var CustomerRepositoryInterface $customerRepository */
+            $customerRepository = app(CustomerRepositoryInterface::class);
+            $customer = $customerRepository->getById($this->customerId);
+            if ($customer) {
+                return $customer->name . ' – Termékkategóriái';
+            }
+        }
         return 'Ügyfél termékkategóriái';
     }
 
-    public array $data = [
-        'customer' => null,
-        'categories' => [],
-    ];
 
     public function mount(): void
     {
@@ -50,18 +57,17 @@ class CustomerCategoriesPage extends Page
         $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
         $categories = $categoryRepository->getRootCategories($customer);
 
-        $this->data['customer'] = $customer;
-        $this->data['categories'] = $categories;
+        $this->customerId = $customer->id;
+        $this->categories = $categories;
     }
 
 
     public function editCategory(int $categoryId): void
     {
-        $customerId = $this->data['customer']->id;
         $this->redirect(
             CustomerProductCategoryResource::getUrl(
                 'edit',
-                ['record' => $categoryId, 'customer_id' => $customerId]
+                ['record' => $categoryId, 'customer_id' => $this->customerId]
             )
         );
     }
@@ -69,11 +75,23 @@ class CustomerCategoriesPage extends Page
     public function deleteCategory(int $categoryId): void
     {
         try {
+            /** @var CustomerRepositoryInterface $customerRepository */
+            $customerRepository = app(CustomerRepositoryInterface::class);
+            $customer = $customerRepository->getById($this->customerId);
+
+            if (!$customer) {
+                \Filament\Notifications\Notification::make()
+                    ->title('Hiba')
+                    ->body('Az ügyfél nem található.')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
             /** @var CustomerProductCategoryRepositoryInterface $categoryRepository */
             $categoryRepository = app(CustomerProductCategoryRepositoryInterface::class);
 
             // Find the category
-            $customer = $this->data['customer'];
             $categories = $categoryRepository->getAllByCustomer($customer);
             $category = $categories->firstWhere('id', $categoryId);
 
@@ -92,7 +110,7 @@ class CustomerCategoriesPage extends Page
             $categoryRepository->deleteProductCategory($category);
 
             // Refresh the categories
-            $this->data['categories'] = $categoryRepository->getRootCategories($customer);
+            $this->categories = $categoryRepository->getRootCategories($customer);
 
             \Filament\Notifications\Notification::make()
                 ->title('Sikeres törlés')

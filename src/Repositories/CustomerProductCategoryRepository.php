@@ -111,6 +111,7 @@ class CustomerProductCategoryRepository implements CustomerProductCategoryReposi
     public function getRootCategories(Customer $customer, int|string|null $language = null): Collection
     {
         return $this->category
+            ->with('childCategories.childCategories.childCategories.childCategories')
             ->joinTranslation($language)
             ->where('customer_id', $customer->id)
             ->where('parent_id', 0)

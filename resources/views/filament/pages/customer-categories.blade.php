@@ -1,8 +1,8 @@
 @php
-    /** @var \Molitor\Customer\Models\Customer $customer */
-    /** @var \Illuminate\Support\Collection|\Molitor\CustomerProduct\Models\CustomerProductCategory[] $categories */
-    $customer = $data['customer'] ?? null;
-    $categories = $data['categories'] ?? collect();
+    /** @var int|null $customerId */
+    /** @var \Illuminate\Support\Collection $categories */
+    $customerRepository = app(\Molitor\Customer\Repositories\CustomerRepositoryInterface::class);
+    $customer = $customerId ? $customerRepository->getById($customerId) : null;
 @endphp
 
 <x-filament::page>
@@ -13,7 +13,7 @@
             <div class="flex gap-2">
                 <x-filament::button
                     tag="a"
-                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('index', ['customer_id' => $customer->id])"
+                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('index', ['customer_id' => $customerId])"
                     icon="heroicon-o-list-bullet"
                     color="gray"
                     outlined
@@ -23,7 +23,7 @@
 
                 <x-filament::button
                     tag="a"
-                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('create', ['customer_id' => $customer->id])"
+                    :href="\Molitor\CustomerProduct\Filament\Resources\CustomerProductCategoryResource::getUrl('create', ['customer_id' => $customerId])"
                     icon="heroicon-o-plus"
                     color="primary"
                 >
